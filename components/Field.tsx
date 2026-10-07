@@ -144,7 +144,7 @@ export default function Field({
     // ---------- cells ----------
     const { texture: atlas, draw } = makeAtlas();
     const cellGeo = new THREE.SphereGeometry(1, 36, 24);
-    const cellMat = makeCellMaterial(atlas, theme.palette);
+    const cellMat = makeCellMaterial(atlas, theme.palette, theme.shape);
     const cellMesh = new THREE.InstancedMesh(cellGeo, cellMat, MAX_CELLS);
     cellMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     cellMesh.frustumCulled = false;

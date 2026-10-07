@@ -16,11 +16,14 @@ varying vec2 vUv;
 varying float vTint, vHalo, vSpeckle, vDead, vSwell, vFlash, vDim;
 varying vec2 vTile;
 uniform float uTime;
+uniform float uBlob;
 void main() {
   vTint = aTint; vHalo = aHalo; vSpeckle = aSpeckle; vDead = aDead; vSwell = aSwell; vFlash = aFlash; vDim = aDim; vTile = aTile; vUv = uv;
   // swell with a slow wobble before rupture
   float wob = aSwell * 0.06 * sin(uTime * 9.0 + position.y * 4.0);
-  vec3 p = position * (1.0 + aSwell * 0.38 + wob);
+  // organic blob growth (theme.shape === 'blob'): slow low-frequency membrane deformation
+  float blob = uBlob * (0.09 * sin(position.x * 3.1 + uTime * 0.6) * sin(position.y * 2.7 - uTime * 0.45) + 0.05 * sin(position.z * 4.0 + uTime * 0.5));
+  vec3 p = position * (1.0 + aSwell * 0.38 + wob + blob);
   #ifdef USE_INSTANCING
     mat4 m = modelMatrix * instanceMatrix;
   #else
@@ -108,13 +111,14 @@ void main() {
 }
 `;
 
-export function makeCellMaterial(atlas: THREE.Texture, palette: { specimen: string; viral: string; immune: string; dead: string; infection: string }) {
+export function makeCellMaterial(atlas: THREE.Texture, palette: { specimen: string; viral: string; immune: string; dead: string; infection: string }, shape: 'circle' | 'blob' = 'circle') {
   return new THREE.ShaderMaterial({
     vertexShader: CELL_VERT,
     fragmentShader: CELL_FRAG,
     uniforms: {
       uAtlas: { value: atlas },
       uTime: { value: 0 },
+      uBlob: { value: shape === 'blob' ? 1 : 0 },
       uBright: { value: 0 },
       uSpecimen: { value: new THREE.Color(palette.specimen) },
       uViral: { value: new THREE.Color(palette.viral) },

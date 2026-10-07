@@ -38,7 +38,7 @@ export default function Specimen({ host, strain, className = '' }: { host?: Host
     const satellites: THREE.Mesh[] = [];
     if (h) {
       draw(0, h.image, h.ticker);
-      cellMat = makeCellMaterial(texture, theme.palette);
+      cellMat = makeCellMaterial(texture, theme.palette, theme.shape);
       const geo = new THREE.SphereGeometry(1.9, 64, 48);
       const n = geo.attributes.position.count;
       const one = (v: number) => new THREE.BufferAttribute(new Float32Array(n).fill(v), 1);
